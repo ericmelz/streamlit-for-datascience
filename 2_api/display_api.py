@@ -15,3 +15,11 @@ st.write(df)
 
 st.write(np.array([1, 2, 3, 4]))
 
+## Magic
+st.write('Magic Commands')
+
+df1 = pd.DataFrame({'col1': [1, 2, 3, 4]})
+df1
+
+x = 10
+x
