@@ -1,4 +1,4 @@
-numpy
+numpy==1.23.5
 pandas
 scipy
 scikit-learn
@@ -6,7 +6,7 @@ matplotlib
 seaborn
 plotly
 altair
-bokeh
+bokeh==2.4.3
 pillow
 opencv-python
 streamlit
