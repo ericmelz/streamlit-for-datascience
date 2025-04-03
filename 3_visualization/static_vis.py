@@ -86,18 +86,47 @@ with st.container():
 st.markdown('---')
 
 with st.container():
-    # 1. include all categorical features
+    # 1. include all categorical features (multiselect)
     # 2. bar, area, line
-    # 3. stacked
-    st.write('3. Find distribution of average total_bill across each day by male and female')
-    features_to_groupby = ['day', 'sex']
+    # 3. stacked (radio)
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        group_cols = st.multiselect('select the features', cat_cols, cat_cols[0])
+        features_to_groupby = group_cols
+        n_features = len(features_to_groupby)
+
+    with c2:
+        chart_type = st.selectbox('Select Chart type', ('bar', 'area', 'line'))
+
+    with c3:
+        stack_option = st.radio('Stacked', ('Yes', 'No'))
+        if stack_option == 'Yes':
+            stacked = True
+        else:
+            stacked = False
+
     feature = ['total_bill']
     select_cols = feature + features_to_groupby
-    avg_total_bill = df[select_cols].groupby(features_to_groupby).mean().unstack()
+    avg_total_bill = df[select_cols].groupby(features_to_groupby).mean()
+    if n_features > 1:
+        for i in range(n_features - 1):
+            avg_total_bill = avg_total_bill.unstack()
+    avg_total_bill.fillna(0, inplace=True)
 
     fig, ax = plt.subplots()
-    avg_total_bill.plot(kind='bar', ax=ax)
+    avg_total_bill.plot(kind=chart_type, ax=ax, stacked=stacked)
     ax.legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
+    ax.set_ylabel('Avg total bill')
     st.pyplot(fig)
 
-    st.dataframe(avg_total_bill)
+    with st.expander('click here to view values'):
+        st.dataframe(avg_total_bill)
+
+    # 4. Find the relation between total_bill and tip on time (scatter plot)
+    st.markdown('---')
+    st.write('4. Find the relation between total_bill and tip on time (scatter plot)')
+    fig, ax = plt.subplots()
+    hue_type = st.selectbox('Select the feature to hue', cat_cols)
+
+    sns.scatterplot(x='total_bill', y='tip', hue=hue_type, ax=ax, data=df)
+    st.pyplot(fig)
