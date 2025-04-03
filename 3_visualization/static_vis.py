@@ -74,9 +74,30 @@ with st.container():
     elif chart_selection == 'violin':
         sns.violinplot(x='sex', y='total_bill', data=df, ax=ax, hue='sex')
     elif chart_selection == 'kdeplot':
-        sns.kdeplot(x=df['total_bill'], hue=df['sex'], ax=ax, shade=True)
+        sns.kdeplot(x=df['total_bill'], hue=df['sex'], ax=ax, fill=True)
     elif chart_selection == 'histogram':
         sns.histplot(x='total_bill', hue='sex', data=df, ax=ax)
     else:
         st.error(f'Internal Error: Unknown chart_section: {chart_selection}')
     st.pyplot(fig)
+
+
+# 3. Find distribution of average total_bill across each day by male and female
+st.markdown('---')
+
+with st.container():
+    # 1. include all categorical features
+    # 2. bar, area, line
+    # 3. stacked
+    st.write('3. Find distribution of average total_bill across each day by male and female')
+    features_to_groupby = ['day', 'sex']
+    feature = ['total_bill']
+    select_cols = feature + features_to_groupby
+    avg_total_bill = df[select_cols].groupby(features_to_groupby).mean().unstack()
+
+    fig, ax = plt.subplots()
+    avg_total_bill.plot(kind='bar', ax=ax)
+    ax.legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
+    st.pyplot(fig)
+
+    st.dataframe(avg_total_bill)
